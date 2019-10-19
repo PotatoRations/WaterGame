@@ -18,12 +18,17 @@ import com.jme3.scene.Node;
 import com.jme3.scene.shape.Quad;
 import com.jme3.water.SimpleWaterProcessor;
 
+import java.io.*;
+
 /**
  * This is the Main Class of your Game. You should only do initialization here.
  * Move your Logic into AppStates or Controls
  * @author normenhansen
  */
 public class Main extends SimpleApplication {
+    
+    public static boolean render = false;
+    public static boolean renderPop = false;
 
     public static void main(String[] args) {
         Main app = new Main();
@@ -37,27 +42,35 @@ public class Main extends SimpleApplication {
         al.setColor(ColorRGBA.White.mult(0.6f));
         rootNode.addLight(al);
         
+        RenderClass.initialRender();
         
-        for (int i = 0;i<16;i++){
-            for (int j = 0;j<16;j++){
-                Spatial model = assetManager.loadModel("Models/grassoutline.j3o");
-                Vector3f move;
-                if(i%2 == 0){
-                     move = new Vector3f(i*10,0,j*12-6);
-                     model.move(move);
-                }
-                else {
-                    move = new Vector3f(i*10,0,j*12);
-                    model.move(move);
-                }
-               
-                
-                rootNode.attachChild(model);
-         }
-         
-        } 
+        for(int i = 0;i<5;i++){
+            for(int j = 0;j<17;j++){
+                for(int k = 0;k<17;k++){
+                    Tile t = RenderClass.tileMap[k][i][j];
+                   
+                    
+                    Vector3f move;
+                    if(j%2 == 0 && t.type != -1){
+                        Spatial model = assetManager.loadModel(t.fileName);
+                        move = new Vector3f(j*10,i*4,k*12-6);
+                        model.move(move);
+                        rootNode.attachChild(model);
+                    }
 
+                    else if (t.type != -1){
+                        Spatial model = assetManager.loadModel(t.fileName);
+                        move = new Vector3f(j*10,i*4,k*12);
+                        model.move(move);
+                        rootNode.attachChild(model);
+                    }
+                    
+                }
+            }
+        } 
         
+        flyCam.setMoveSpeed(50);
+                        
     }
 
     @Override
@@ -67,6 +80,31 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleRender(RenderManager rm) {
-        //TODO: add render code
+        if(render){
+            for(int i = 0;i<5;i++){
+            for(int j = 0;j<17;j++){
+                for(int k = 0;k<17;k++){
+                    Tile t = RenderClass.tileMap[k][i][j];
+                   
+                    
+                    Vector3f move;
+                    if(j%2 == 0 && t.type != -1){
+                        Spatial model = assetManager.loadModel(t.fileName);
+                        move = new Vector3f(j*10,i*4,k*12-6);
+                        model.move(move);
+                        rootNode.attachChild(model);
+                    }
+
+                    else if (t.type != -1){
+                        Spatial model = assetManager.loadModel(t.fileName);
+                        move = new Vector3f(j*10,i*4,k*12);
+                        model.move(move);
+                        rootNode.attachChild(model);
+                    }
+                    
+                }
+            }
+        } 
+        }
     }
 }
