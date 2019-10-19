@@ -10,25 +10,27 @@ package mygame;
  * @author aaron
  */
 public class Tile {
-    int type;
-    boolean salted;
-    boolean submerged;
-    double height;
-    
-    
-    public Tile(int type, double height, boolean salted, boolean submerged){
+    public int type;
+    public boolean salted;
+    public boolean submerged;
+    public double height;
+    public String fileName;
+
+
+    public Tile(int type, double height, boolean salted, boolean submerged, String fileName){
         this.type = type;
         this.height = height;
         this.salted = salted;
         this.submerged = submerged;
+        this.fileName = fileName;
     }
-    
+
     public void changeType(int newType){
         this.type = newType;
     }
-    
+
     public void changeSalt(boolean salted){
         this.salted = salted;
     }
-    
+
 }
