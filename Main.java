@@ -9,6 +9,14 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.light.AmbientLight;
+import com.jme3.math.FastMath;
+import com.jme3.math.Plane;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector2f;
+import com.jme3.renderer.queue.RenderQueue.ShadowMode;
+import com.jme3.scene.Node;
+import com.jme3.scene.shape.Quad;
+import com.jme3.water.SimpleWaterProcessor;
 
 /**
  * This is the Main Class of your Game. You should only do initialization here.
@@ -23,22 +31,23 @@ public class Main extends SimpleApplication {
     }
 
     @Override
-    public void simpleInitApp() {
+    public void simpleInitApp() {  
         
         AmbientLight al = new AmbientLight();
         al.setColor(ColorRGBA.White.mult(0.6f));
         rootNode.addLight(al);
+        
         
         for (int i = 0;i<16;i++){
             for (int j = 0;j<16;j++){
                 Spatial model = assetManager.loadModel("Models/grassoutline.j3o");
                 Vector3f move;
                 if(i%2 == 0){
-                     move = new Vector3f(i*3,0,j*3-1);
+                     move = new Vector3f(i*10,0,j*12-6);
                      model.move(move);
                 }
                 else {
-                    move = new Vector3f(i*3,0,j*3);
+                    move = new Vector3f(i*10,0,j*12);
                     model.move(move);
                 }
                
