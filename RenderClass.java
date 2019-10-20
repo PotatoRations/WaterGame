@@ -50,6 +50,9 @@ public class RenderClass {
                             case 10:
                                 temp = new Tile (tileNum, i, false, false,"Models/skyscraperstile.j3o");
                                 break;
+                            case 12:
+                                temp = new Tile (tileNum, i, false, false,"Models/housingtile.j3o");
+                                break;
                             case 20:
                                 temp = new Tile (tileNum, i, false, false,"Models/smallfactorytile.j3o");
                                 break;
@@ -85,8 +88,8 @@ public class RenderClass {
         
     }
     
-    public void changeTile(int k, int i, int j, Tile t){
-        tileMap[k][i][k] = t;
+    public static void changeTile(int k, int i, int j, Tile t){
+        tileMap[k][i][j] = t;
         Main.render = true;
     }
     
