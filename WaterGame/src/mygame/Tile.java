@@ -5,11 +5,13 @@
  */
 package mygame;
 
+import com.jme3.scene.Geometry;
+
 /**
  *
  * @author aaron
  */
-public class Tile {
+public class Tile{
     public int type;
     public boolean salted;
     public boolean submerged;

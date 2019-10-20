@@ -1,6 +1,8 @@
 package mygame;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.collision.CollisionResults;
+import com.jme3.font.BitmapText;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
@@ -18,8 +20,13 @@ import com.jme3.scene.Node;
 import com.jme3.scene.shape.Quad;
 import com.jme3.water.SimpleWaterProcessor;
 import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
+import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.math.Ray;
 import com.jme3.ui.Picture;
+import com.jme3.font.BitmapFont;
 
 
 import java.io.*;
@@ -37,22 +44,36 @@ public class Main extends SimpleApplication {
     public static boolean render = false;
     public static boolean renderPop = false;
     public static boolean nextTurn = true;
-    
+    public static double temperature = 30;
     Data data;
-    
+    public static Main myapp;
+    public static Node getNode;
 
     public CameraControl ccontrol;
     public Controls moves;
+    public static int screenH;
+    public static BitmapFont getFont;
     
     public static void main(String[] args) {
         Main app = new Main();
+        myapp = app;
         app.start();
     }
     
+    public static Main getApp(){
+        return myapp;
+    }
     
+    public static GUIManager guiManager;
 
     @Override
     public void simpleInitApp() {  
+        
+        getNode = guiNode;
+        getFont = guiFont;
+        RenderClass.initialRender();
+        data = new Data (17,200000,200000);
+        screenH = settings.getHeight();
         
         Picture pic = new Picture("HUD Picture");
         pic.setImage(assetManager, "Top.png", true);
@@ -61,10 +82,40 @@ public class Main extends SimpleApplication {
         pic.setPosition(settings.getWidth()/2-400, settings.getHeight()-75);
         guiNode.attachChild(pic);
         
+        BitmapText hudText = new BitmapText(guiFont, true);
+        hudText.setSize(guiFont.getCharSet().getRenderedSize());      // font size
+        hudText.setColor(ColorRGBA.Black);                             // font color
+        hudText.setText("Money: $500 000");             // the text
+        hudText.setLocalTranslation(575, settings.getHeight(), 0); // position
+        guiNode.attachChild(hudText);
+        
+        BitmapText power = new BitmapText(guiFont, true);
+        power.setSize(guiFont.getCharSet().getRenderedSize());      // font size
+        power.setColor(ColorRGBA.Black);                             // font color
+        power.setText("Energy: 100/100");             // the text
+        power.setLocalTranslation(580, settings.getHeight()-20, 0); // position
+        guiNode.attachChild(power);
+        
+        Picture thermo = new Picture("HUD Picture");
+        thermo.setImage(assetManager, "Thermo.png", true);
+        thermo.setWidth(40);
+        thermo.setHeight(70);
+        thermo.setPosition(350, settings.getHeight()-70);
+        guiNode.attachChild(thermo);
+        
+        BitmapText temp = new BitmapText(guiFont, true);
+        temp.setName("temp");
+        temp.setSize(guiFont.getCharSet().getRenderedSize());      // font size
+        temp.setColor(ColorRGBA.Red);                             // font color
+        temp.setText(temperature + "°C");             // the text
+        temp.setLocalTranslation(380, settings.getHeight()-40, 0); // position
+        getNode.attachChild(temp);
+        
         screen = new Screen(this, "tonegod/gui/style/def/style_map.gui.xml");
         guiNode.addControl(screen);
         
         GUIManager guiManager = new GUIManager();
+        this.guiManager = guiManager;
         
         guiManager.nextYearButton(screen);
         
@@ -73,8 +124,7 @@ public class Main extends SimpleApplication {
         al.setColor(ColorRGBA.White.mult(0.5f));
         rootNode.addLight(al);
         
-        RenderClass.initialRender();
-        data = new Data (17,200000,200000);
+        
         
         for(int i = 0;i<5;i++){
             for(int j = 0;j<17;j++){
@@ -131,14 +181,19 @@ public class Main extends SimpleApplication {
         inputManager.addMapping("left",  new KeyTrigger(KeyInput.KEY_A));
         inputManager.addMapping("right", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("nextTurn", new KeyTrigger(KeyInput.KEY_N));
+        inputManager.addMapping("select", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         // Add the names to the action listener.
-        inputManager.addListener(moves.analogListener, "forward", "back", "left", "right","nextTurn");
+        inputManager.addListener(moves.analogListener, "forward", "back", "left", "right","nextTurn","select");
 
     }
-
+    
+    public static Spatial[][][] spatialMatrix = new Spatial[5][17][17];
+    
+    
     @Override
     public void simpleRender(RenderManager rm) {
         if(render){
+            rootNode.detachAllChildren();
             for(int i = 0;i<5;i++){
                 for(int j = 0;j<17;j++){
                     for(int k = 0;k<17;k++){
@@ -147,11 +202,11 @@ public class Main extends SimpleApplication {
 
                         Vector3f move;
                         if(j%2 == 0 && t.type != -1){
-                            System.out.println(t.type);
-                            System.out.println(t.fileName);
+                            
                             Spatial model = assetManager.loadModel(t.fileName);
                             move = new Vector3f(j*10,i*4,k*12-6);
                             model.move(move);
+                            spatialMatrix[i][j][k] = model;
                             rootNode.attachChild(model);
                         }
 
@@ -159,6 +214,7 @@ public class Main extends SimpleApplication {
                             Spatial model = assetManager.loadModel(t.fileName);
                             move = new Vector3f(j*10,i*4,k*12);
                             model.move(move);
+                            spatialMatrix[i][j][k] = model;
                             rootNode.attachChild(model);
                         }
 
@@ -188,5 +244,6 @@ public class Main extends SimpleApplication {
         */
         render = false;
     }
+    
     
 }

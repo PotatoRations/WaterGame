@@ -5,7 +5,6 @@
  */
 package mygame;
 
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -68,6 +67,14 @@ public class RenderClass {
                             case 52:  
                                 temp = new Tile (tileNum, i, false, false,"Models/coalplanttile.j3o");
                                 break;
+                            case 11:
+                            case 21:
+                            case 23:
+                            case 31:
+                            case 51:
+                            case 53:
+                               temp = new Tile (tileNum, i, false, false,"Models/constructiontile.j3o");
+                               break; 
                         }
                         
                         tileMap[k][i][j] = temp;

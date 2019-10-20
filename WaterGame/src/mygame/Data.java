@@ -95,6 +95,7 @@ public class Data {
         */
         carbonEmitted += calculateCarbon();
         temperature = carbonEmitted/1000000;
+        
         raiseWater();
     }
     
