@@ -17,6 +17,7 @@ public class Data {
     public Tile[][] tileMap;
     public double waterHeight =0;
     public double temperature =0;
+    public double carbonEmitted = 0;
     
     
     /*
@@ -53,12 +54,31 @@ public class Data {
         this.money = money;
         this.mapSize = mapSize;
         tileMap = new Tile[mapSize][mapSize];
+        
+        for(int i = 2;i<5;i++){
+            for (int j = 0;j<mapSize;j++){
+                for(int k = 0;k<mapSize;k++){
+                    Tile t1 = RenderClass.tileMap[k][i][j];
+                    if(i<4){
+                        Tile t2 = RenderClass.tileMap[k][i+1][j];
+                        if (t2.height == -1 && t1.height!=-1){
+                            tileMap[k][j] = t1;
+                        }
+                    }
+                    else {
+                        if(t1.height!=-1){
+                            tileMap[k][j] = t1;
+                        }
+                    }
+                }
+            }
+        }
         //TODO: generate matrix with tile types
     }
     
     
     //runs next turn and generates new data
-    public void startLoop(){
+     public void startLoop(){
         //TODO: add stuff
         /*
         add money
@@ -73,11 +93,15 @@ public class Data {
         change pops
         raise water
         */
+        carbonEmitted += calculateCarbon();
+        temperature = carbonEmitted/1000000;
+        raiseWater();
     }
     
     public void raiseWater(){
         //todo: raise in accordance to temp (1.6cm for every degree)
         waterHeight = temperature*1.6;
+        System.out.println(waterHeight);
         //submerges submerged tiles
         for (int i=0; i<mapSize; i++){
             for (int j=0; j<mapSize; j++){
@@ -86,10 +110,25 @@ public class Data {
                     tileMap[i][j].changeType(2);
                     tileMap[i][j].changeSalt(true);
                     tileMap[i][j].submerged = true;
+                    
                 }
                 //if is ocean, set height to waterHeight
                 if (tileMap[i][j].type == 2){
                     tileMap[i][j].height = waterHeight;
+                }
+                
+            }
+        }
+        
+        for(int i = 0;i<5;i++){
+            for(int j = 0; j<mapSize;j++){
+                for(int k = 0;k<mapSize;k++){
+                    Tile temp = RenderClass.tileMap[k][i][j];
+                    if(temp.height<=waterHeight){
+                        temp.type = 2;
+                        temp.fileName = "Models/oceantile.j3o";
+                        RenderClass.changeTile(k, i, j, temp);
+                    }    
                 }
             }
         }
